@@ -1,3 +1,4 @@
+import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -22,7 +23,10 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.lib.enums import TA_CENTER
 app = Flask(__name__)
-app.secret_key = "spam_detector_secret_key_change_later"
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "development-key-only"
+)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
