@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Spam Detector | Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        /* Navigation */
+        nav {
+            background: #172554;
+            padding: 20px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        nav h2 {
+            color: white;
+            margin: 0;
+            font-size: 25px;
+        }
+
+        nav div {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+        nav a:hover {
+            color: #60a5fa;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            width: 92%;
+            margin: 35px auto;
+        }
+
+        .heading {
+            margin-bottom: 30px;
+        }
+
+        .heading h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .heading p {
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Statistics Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            font-size: 15px;
+            color: #64748b;
+            margin: 0 0 15px;
+        }
+
+        .number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .spam {
+            color: #dc2626;
+        }
+
+        .normal {
+            color: #16a34a;
+        }
+
+        /* Dashboard Sections */
+        .section {
+            background: white;
+            padding: 25px;
+            margin-top: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 22px;
+        }
+
+        /* Chart */
+        .chart-container {
+            max-width: 380px;
+            margin: auto;
+        }
+
+        /* Recent Activity Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        td {
+            color: #475569;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .spam-label {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .normal-label {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 650px) {
+            nav {
+                padding: 18px;
+            }
+
+            nav div {
+                gap: 14px;
+            }
+
+            .heading h1 {
+                font-size: 24px;
+            }
+
+            .section {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <h2>Smart Spam Detector</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/history">History</a>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="heading">
+        <h1>Dashboard Overview</h1>
+        <p>Monitor your spam detection activity and statistics.</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Messages</h3>
+            <div class="number">{{ total }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Spam Messages</h3>
+            <div class="number spam">{{ spam_count }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Normal Messages</h3>
+            <div class="number normal">{{ normal_count }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Spam Percentage</h3>
+            <div class="number spam">{{ spam_percentage }}%</div>
+        </div>
+
+        <div class="card">
+            <h3>Normal Percentage</h3>
+            <div class="number normal">{{ normal_percentage }}%</div>
+        </div>
+
+    </div>
+
+    <!-- Doughnut Chart -->
+    <div class="section">
+
+        <h2>Spam vs Normal Messages</h2>
+
+        <div class="chart-container">
+            <canvas id="messageChart"></canvas>
+        </div>
+
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section">
+
+        <h2>Recent Prediction Activity</h2>
+
+        <div class="table-container">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Message</th>
+                        <th>Prediction</th>
+                        <th>Probability</th>
+                        <th>Date and Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for record in recent_records %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+
+                        <td>{{ record[1] }}</td>
+
+                        <td>
+                            {% if record[2] == "SPAM" %}
+                                <span class="spam-label">SPAM</span>
+                            {% else %}
+                                <span class="normal-label">NORMAL</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ record[3] }}%</td>
+                        <td>{{ record[4] }}</td>
+                    </tr>
+
+                    {% else %}
+                    <tr>
+                        <td colspan="5">No recent activity available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    Smart Spam Detector | Python + Machine Learning Project
+</footer>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('messageChart');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+
+        data: {
+            labels: ['Spam Messages', 'Normal Messages'],
+
+            datasets: [{
+                data: [{{ spam_count }}, {{ normal_count }}],
+                backgroundColor: ['#ef4444', '#22c55e'],
+                borderWidth: 3,
+                borderColor: '#ffffff'
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
